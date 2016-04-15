@@ -4,7 +4,8 @@ SRCS = main.c stm32f4xx_it.c system_stm32f4xx.c
 
 # all the files will be generated with this name (main.elf, main.bin, main.hex, etc)
 
-PROJ_NAME=main
+PROJ_NAME=blink
+OUTPUT_DIR=bin
 
 # that's it, no need to change anything below this line!
 
@@ -33,22 +34,28 @@ OBJS = $(SRCS:.c=.o)
 
 ###################################################
 
-.PHONY: lib proj
+.PHONY: $(OUTPUT_DIR) lib proj
 
-all: lib proj
+all: $(OUTPUT_DIR) lib proj
+
+$(OUTPUT_DIR):
+	mkdir -p $(OUTPUT_DIR)
 
 lib:
 	$(MAKE) -C lib
 
-proj: 	$(PROJ_NAME).elf
+proj: 	$(OUTPUT_DIR)/$(PROJ_NAME).elf
 
-$(PROJ_NAME).elf: $(SRCS)
+$(OUTPUT_DIR)/$(PROJ_NAME).elf: $(SRCS)
 	$(CC) $(CFLAGS) $^ -o $@ -Llib -lstm32f4
-	$(OBJCOPY) -O ihex $(PROJ_NAME).elf $(PROJ_NAME).hex
-	$(OBJCOPY) -O binary $(PROJ_NAME).elf $(PROJ_NAME).bin
+	$(OBJCOPY) -O ihex $(OUTPUT_DIR)/$(PROJ_NAME).elf $(OUTPUT_DIR)/$(PROJ_NAME).hex
+	$(OBJCOPY) -O binary $(OUTPUT_DIR)/$(PROJ_NAME).elf $(OUTPUT_DIR)/$(PROJ_NAME).bin
 
 clean:
 	$(MAKE) -C lib clean
-	rm -f $(PROJ_NAME).elf
-	rm -f $(PROJ_NAME).hex
-	rm -f $(PROJ_NAME).bin
+	rm -f $(OUTPUT_DIR)/$(PROJ_NAME).elf
+	rm -f $(OUTPUT_DIR)/$(PROJ_NAME).hex
+	rm -f $(OUTPUT_DIR)/$(PROJ_NAME).bin
+
+upload: proj
+	st-flash write $(OUTPUT_DIR)/$(PROJ_NAME).bin 0x8000000

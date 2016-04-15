@@ -4,7 +4,7 @@ SRCS = main.c stm32f4xx_it.c system_stm32f4xx.c
 
 # all the files will be generated with this name (main.elf, main.bin, main.hex, etc)
 
-PROJ_NAME=blink
+PROJ_NAME=main
 OUTPUT_DIR=bin
 
 # that's it, no need to change anything below this line!
@@ -57,5 +57,5 @@ clean:
 	rm -f $(OUTPUT_DIR)/$(PROJ_NAME).hex
 	rm -f $(OUTPUT_DIR)/$(PROJ_NAME).bin
 
-upload: proj
+flash: proj
 	st-flash write $(OUTPUT_DIR)/$(PROJ_NAME).bin 0x8000000
